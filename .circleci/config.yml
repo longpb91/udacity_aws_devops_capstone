@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  aws-cli: circleci/aws-cli@2.0
+
 jobs:
   test_lint:
     docker:
@@ -29,10 +32,10 @@ jobs:
           key: v1-dependencies-{{ checksum "requirements.txt" }}
           path: ./venv
 
-      # run lint
       - run:
           name: Run lint
           comand: |
+            . venv/bin/activate
             make lint
 
   build-image:
@@ -56,26 +59,26 @@ jobs:
             docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
             docker push longpb/capstone_aws_devops_pj
   
-  deploy-kubernetes:
-    executor: aws-cli/default
-    docker:
-      - image: python:3.7.3-stretch
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - ""
-      - run:
-          name: Deploy kubernetes on EC2 instance
-          command: |
-            pwd
-            echo "$EC2_KEYPAIR" >> capstone-keypair.pem
-            ls -l
-            chmod 400 capstone-keypair.pem
-            apt update
-            apt install expect -y
-            chmod +x deploy_k8s.sh
-            ./deploy_k8s.sh
+  # deploy-kubernetes:
+  #   executor: aws-cli/default
+  #   docker:
+  #     - image: python:3.7.3-stretch
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints:
+  #           - ""
+  #     - run:
+  #         name: Deploy kubernetes on EC2 instance
+  #         command: |
+  #           pwd
+  #           echo "$EC2_KEYPAIR" >> capstone-keypair.pem
+  #           ls -l
+  #           chmod 400 capstone-keypair.pem
+  #           apt update
+  #           apt install expect -y
+  #           chmod +x deploy_k8s.sh
+  #           ./deploy_k8s.sh
 
 workflows:
   default:
