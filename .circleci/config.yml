@@ -60,26 +60,26 @@ jobs:
             docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
             docker push longpb/capstone_aws_devops_pj
   
-  # deploy-kubernetes:
-  #   executor: aws-cli/default
-  #   docker:
-  #     - image: python:3.7.3-stretch
-  #   steps:
-  #     - checkout
-  #     - add_ssh_keys:
-  #         fingerprints:
-  #           - ""
-  #     - run:
-  #         name: Deploy kubernetes on EC2 instance
-  #         command: |
-  #           pwd
-  #           echo "$EC2_KEYPAIR" >> capstone-keypair.pem
-  #           ls -l
-  #           chmod 400 capstone-keypair.pem
-  #           apt update
-  #           apt install expect -y
-  #           chmod +x deploy_k8s.sh
-  #           ./deploy_k8s.sh
+  deploy-kubernetes:
+    executor: aws-cli/default
+    docker:
+      - image: python:3.7.3-stretch
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "1a:a6:ca:a4:71:a4:de:d3:59:71:e9:d2:1c:ec:52:11"
+      - run:
+          name: Deploy kubernetes on EC2 instance
+          command: |
+            pwd
+            echo "$EC2_KEYPAIR" >> capstone-keypair.pem
+            ls -l
+            chmod 400 capstone-keypair.pem
+            apt update
+            apt install expect -y
+            chmod +x deploy_kubernetes.sh
+            ./deploy_kubernetes.sh
 
 workflows:
   default:
@@ -88,7 +88,7 @@ workflows:
       - build-image:
           requires:
             - test_lint
-      # - deploy-kubernetes:
-      #     requires:
-      #       - build-image
+      - deploy-kubernetes:
+          requires:
+            - build-image
 
