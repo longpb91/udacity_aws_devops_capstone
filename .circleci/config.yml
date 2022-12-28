@@ -38,26 +38,26 @@ jobs:
             . venv/bin/activate
             make lint
 
-  build-image:
-    working_directory: /app
-    docker:
-      - image: docker:17.05.0-ce-git
+  # build-image:
+  #   working_directory: /app
+  #   docker:
+  #     - image: docker:17.05.0-ce-git
     
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Buil an Docker Image
-          command: |
-            docker build -t longpb/capstone_aws_devops_pj .
-            echo "--- List of images ---"
-            docker image ls
-            echo "----------------------"
-      - run:
-          name: Push to DockerHub
-          command: |
-            docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
-            docker push longpb/capstone_aws_devops_pj
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker
+  #     - run:
+  #         name: Buil an Docker Image
+  #         command: |
+  #           docker build -t longpb/capstone_aws_devops_pj .
+  #           echo "--- List of images ---"
+  #           docker image ls
+  #           echo "----------------------"
+  #     - run:
+  #         name: Push to DockerHub
+  #         command: |
+  #           docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+  #           docker push longpb/capstone_aws_devops_pj
   
   # deploy-kubernetes:
   #   executor: aws-cli/default
@@ -84,9 +84,9 @@ workflows:
   default:
     jobs:
       - test_lint
-      - build-image:
-          requires:
-            - test_lint
+      # - build-image:
+      #     requires:
+      #       - test_lint
       # - deploy-kubernetes:
       #     requires:
       #       - build-image
