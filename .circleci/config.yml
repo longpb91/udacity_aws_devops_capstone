@@ -124,7 +124,6 @@ jobs:
                 echo "App didn't work after deploy. Rollback previous deploy.Check result at ${url}"
               fi
         
-
 workflows:
   default:
     jobs:
