@@ -135,7 +135,7 @@ workflows:
   default:
     jobs:
       - test_lint
-      - build-image-ecr:
+      - build_and_push_image:
           requires:
             - test_lint
       # - deploy-eks:
