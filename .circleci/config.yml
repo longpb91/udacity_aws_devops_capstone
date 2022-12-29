@@ -133,7 +133,7 @@ workflows:
       - build-image:
           requires:
             - test_lint
-      - deploy-kubernetes:
+      - deploy-eks:
           requires:
             - build-image
 
