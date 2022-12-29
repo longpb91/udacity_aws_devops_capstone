@@ -71,13 +71,7 @@ jobs:
           dockerfile: Dockerfile
           repo: longpb
           tag: latest,$CIRCLE_SHA1
-      # - run:
-      #     name: Get AccountID
-      #     command: |
-      #       aws sts get-caller-identity --query Account --output text >> account_id.txt
-      #       cat account_id.txt
 
-  
   deploy-eks:
     docker:
       - image: amazon/aws-cli
