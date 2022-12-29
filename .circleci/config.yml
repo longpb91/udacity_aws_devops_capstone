@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@2.0
+  aws-ecr: circleci/aws-ecr@8.2.1
 
 jobs:
   test_lint:
@@ -39,47 +40,44 @@ jobs:
             . venv/bin/activate
             make lint
 
-  build-image:
-    working_directory: /app
-    docker:
-      - image: docker:17.05.0-ce-git
-    
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Buil an Docker Image
-          command: |
-            docker build -t longpb/capstone_aws_devops_pj .
-            echo "--- List of images ---"
-            docker image ls
-            echo "----------------------"
-      - run:
-          name: Push to DockerHub
-          command: |
-            docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
-            docker push longpb/capstone_aws_devops_pj
-  
-  # deploy-kubernetes:
-  #   executor: aws-cli/default
+  # build-image:
+  #   working_directory: /app
   #   docker:
-  #     - image: python:3.7.3-stretch
+  #     - image: docker:17.05.0-ce-git
+    
   #   steps:
   #     - checkout
-  #     - add_ssh_keys:
-  #         fingerprints:
-  #           - "1a:a6:ca:a4:71:a4:de:d3:59:71:e9:d2:1c:ec:52:11"
+  #     - setup_remote_docker
   #     - run:
-  #         name: Deploy kubernetes on EC2 instance
+  #         name: Buil an Docker Image
   #         command: |
-  #           pwd
-  #           echo "$EC2_KEYPAIR" >> capstone-keypair.pem
-  #           ls -l
-  #           chmod 400 capstone-keypair.pem
-  #           apt update
-  #           apt install expect -y
-  #           chmod +x deploy_kubernetes.sh
-  #           ./deploy_kubernetes.sh
+  #           docker build -t longpb/capstone_aws_devops_pj .
+  #           echo "--- List of images ---"
+  #           docker image ls
+  #           echo "----------------------"
+  #     - run:
+  #         name: Push to DockerHub
+  #         command: |
+  #           docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+  #           docker push longpb/capstone_aws_devops_pj
+
+  build-image-ecr:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - setup_remote_docker:
+          version: 20.10.11
+      - aws-ecr/build-and-push-image:
+          dockerfile: Dockerfile
+          repo: longpb
+          tag: latest,$CIRCLE_SHA1
+      - run:
+          name: Get AccountID
+          command: |
+            aws sts get-caller-identity --query Account --output text >> account_id.txt
+            cat account_id.txt
+
+  
   deploy-eks:
     docker:
       - image: amazon/aws-cli
@@ -111,13 +109,13 @@ jobs:
               kubectl wait  --for=condition=ready pod -l app=myflaskapp
               sleep 30s
         - run:
-            name: Test flask app is deployed 
+            name: Test deployed flask app
             command: |
               export hostname=$(kubectl get services flask-service  -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
               export url="http://${hostname}:8000"
               if curl -X GET ${url} | grep -q "I am LongPB"
               then
-                echo "App work at ${url}"
+                echo "App works at ${url}"
               else
                 kubectl rollout undo deployment/myflaskapp-deployment
                 kubectl rollout status deployment myflaskapp-deployment --timeout=90s
@@ -128,10 +126,10 @@ workflows:
   default:
     jobs:
       - test_lint
-      - build-image:
+      - build-image-ecr:
           requires:
             - test_lint
-      - deploy-eks:
-          requires:
-            - build-image
+      # - deploy-eks:
+      #     requires:
+      #       - build-image
 

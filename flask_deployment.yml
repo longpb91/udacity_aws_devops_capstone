@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: myflaskapp
-          image: longpb/capstone_aws_devops_pj:latest
+          image: 055771427366.dkr.ecr.us-east-1.amazonaws.com/longpb:${CIRCLE_SHA1}
           imagePullPolicy: Always
           ports:
             - containerPort: 5000

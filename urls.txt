@@ -1,2 +1,2 @@
 [URL01] https://github.com/longpb91/udacity_aws_devops_capstone
-[URL02] http://ad360e1b15b4f4b30b336570a48ab316-2127273041.us-east-1.elb.amazonaws.com:8000
+[URL02] http://a26d5505e465d41208aaa0575dc5e6e9-904235296.us-east-1.elb.amazonaws.com:8000
