@@ -5,7 +5,7 @@ orbs:
   aws-ecr: circleci/aws-ecr@8.2.1
 
 jobs:
-  test_lint:
+  test-lint:
     docker:
       - image: python:3.7.3-stretch
     
@@ -61,31 +61,21 @@ jobs:
   #           docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
   #           docker push longpb/capstone_aws_devops_pj
 
-  # build_and_push_image:
-  #   steps:
-  #     - aws-ecr/build-and-push-image:
-  #         account-url: ${AWS_ECR_ACCOUNT_URL}
-  #         aws-access-key-id: ${AWS_ACCESS_KEY_ID}
-  #         aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
-  #         create-repo: true
-  #         dockerfile: Dockerfile
-  #         path: .
-  #         region: ${AWS_DEFAULT_REGION}
-  #         repo: longpb1
-  #         tag: "$CIRCLE_SHA1"
-
-  # build-image-ecr:
-  #   docker:
-  #     - image: cimg/base:stable
-  #   steps:
-  #     - setup_remote_docker:
-  #         version: 20.10.11
-  #     - aws-ecr/build-and-push-image:
-  #         dockerfile: Dockerfile
-  #         region: ${AWS_DEFAULT_REGION}
-  #         account-url: ${AWS_ECR_ACCOUNT_URL}
-  #         repo: longpb
-  #         tag: latest,$CIRCLE_SHA1
+  build-image-ecr:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - setup_remote_docker:
+          version: 20.10.11
+      - aws-ecr/build-and-push-image:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          create-repo: true
+          dockerfile: Dockerfile
+          path: .
+          region: AWS_DEFAULT_REGION
+          repo: longpb1
+          tag: latest,"$CIRCLE_SHA1"
 
   deploy-eks:
     docker:
@@ -134,19 +124,23 @@ jobs:
 workflows:
   default:
     jobs:
-      - test_lint
-      - aws-ecr/build-and-push-image:
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          create-repo: true
-          dockerfile: Dockerfile
-          path: .
-          region: us-east-1
-          repo: longpb1
-          tag: latest,"$CIRCLE_SHA1"
+      - test-lint
+      # - aws-ecr/build-and-push-image:
+      #     aws-access-key-id: AWS_ACCESS_KEY_ID
+      #     aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+      #     create-repo: true
+      #     dockerfile: Dockerfile
+      #     path: .
+      #     region: us-east-1
+      #     repo: longpb1
+      #     tag: latest,"$CIRCLE_SHA1"
+      #     requires:
+      #       - test_lint
+      - build-image-ecr:
           requires:
-            - test_lint
+            - test-lint
       - deploy-eks:
           requires:
-            - aws-ecr/build-and-push-image
+            - build-image-ecr
+            # - aws-ecr/build-and-push-image
 
