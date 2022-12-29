@@ -60,26 +60,71 @@ jobs:
             docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
             docker push longpb/capstone_aws_devops_pj
   
-  deploy-kubernetes:
-    executor: aws-cli/default
+  # deploy-kubernetes:
+  #   executor: aws-cli/default
+  #   docker:
+  #     - image: python:3.7.3-stretch
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints:
+  #           - "1a:a6:ca:a4:71:a4:de:d3:59:71:e9:d2:1c:ec:52:11"
+  #     - run:
+  #         name: Deploy kubernetes on EC2 instance
+  #         command: |
+  #           pwd
+  #           echo "$EC2_KEYPAIR" >> capstone-keypair.pem
+  #           ls -l
+  #           chmod 400 capstone-keypair.pem
+  #           apt update
+  #           apt install expect -y
+  #           chmod +x deploy_kubernetes.sh
+  #           ./deploy_kubernetes.sh
+  deploy-eks:
     docker:
-      - image: python:3.7.3-stretch
+      - image: amazon/aws-cli
     steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "1a:a6:ca:a4:71:a4:de:d3:59:71:e9:d2:1c:ec:52:11"
-      - run:
-          name: Deploy kubernetes on EC2 instance
-          command: |
-            pwd
-            echo "$EC2_KEYPAIR" >> capstone-keypair.pem
-            ls -l
-            chmod 400 capstone-keypair.pem
-            apt update
-            apt install expect -y
-            chmod +x deploy_kubernetes.sh
-            ./deploy_kubernetes.sh
+        - checkout
+        - run:
+            name: Install tar
+            command: |
+              yum -y install tar gzip gettext
+        - run: 
+            name: Install dependencies
+            command: |
+              curl -o /tmp/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl &&\
+              chmod +x /tmp/kubectl
+              mv /tmp/kubectl /usr/local/bin
+              curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+              mv /tmp/eksctl /usr/local/bin
+        - run:
+            name: Create cluster
+            command: |
+              chmod +x run_create_cluster.sh && \
+              ./run_create_cluster.sh
+        - run:
+            name: Deploy Kubenetes to eks
+            command: |
+              chmod +x deploy.sh && \
+              ./deploy.sh
+              # Wait for deploy success 
+              kubectl wait  --for=condition=ready pod -l app=myflaskapp
+              sleep 30s
+        - run:
+            name: Test flask app is deployed 
+            command: |
+              export hostname=$(kubectl get services flask-service  -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
+              export url="http://${hostname}:8000"
+              if curl -X GET ${url} | grep -q "Hello World"
+              then
+                echo "App work at ${url}"
+              else
+                kubectl rollout undo deployment/myflaskapp-deployment
+                kubectl rollout status deployment myflaskapp-deployment --timeout=90s
+                echo "App didn't work after deploy. Rollback previous deploy.Check result at ${url}"
+              fi
+        
+
 
 workflows:
   default:
