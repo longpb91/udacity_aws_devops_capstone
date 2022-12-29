@@ -5,5 +5,5 @@ then
   echo "cluster existed!"
 else
 	cat cluster.yml 
-    eksctl create cluster --config-file=cluster.yml
+  eksctl create cluster --config-file=cluster.yml
 fi
