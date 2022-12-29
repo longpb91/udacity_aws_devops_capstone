@@ -143,10 +143,10 @@ workflows:
           path: .
           region: us-east-1
           repo: longpb1
-          tag: "$CIRCLE_SHA1"
+          tag: latest,"$CIRCLE_SHA1"
           requires:
             - test_lint
-      # - deploy-eks:
-      #     requires:
-      #       - build-image
+      - deploy-eks:
+          requires:
+            - build-image
 

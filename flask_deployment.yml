@@ -16,8 +16,8 @@ spec:
         app: myflaskapp
     spec:
       containers:
-        - name: myflaskapp
-          image: 055771427366.dkr.ecr.us-east-1.amazonaws.com/longpb:${CIRCLE_SHA1}
+        - name: myflaskapp 
+          image: 326166830824.dkr.ecr.us-east-1.amazonaws.com/longpb1:${CIRCLE_SHA1}
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
