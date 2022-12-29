@@ -27,12 +27,15 @@ The project includes the following main tasks:
 
 You need to set up the following environment variables in your CircleCI project with values:
 
-* AWS_ACCESS_KEY_ID: you need to create an IAM user
-* AWS_SECRET_ACCESS_KEY: you need to create an IAM user
-* AWS_DEFAULT_REGION: choose a default region (exp: us-east-1)
-* DOCKERHUB_USERNAME: your dockerhub username
-* DOCKERHUB_PASSWORD: your dockerhub password
-* EC2_KEY_PAIR: the EC2 keypair
+* `AWS_ACCESS_KEY_ID`: you need to create an IAM user
+* `AWS_SECRET_ACCESS_KEY`: you need to create an IAM user
+* `AWS_DEFAULT_REGION`: choose a default region (exp: us-east-1)
+* `AWS_ECR_REGISTRY_ID`: the 12 digit AWS Registry ID associated with the ECR account
+* `AWS_ECR_ACCOUNT_URL`: the environment variable storing your Amazon ECR account URL that maps to an AWS account, e.g. {awsAccountNum}.dkr.ecr.{`AWS_DEFAULT_REGION`}.amazonaws.com 
+![ECR](AWS_registry_id_and_ECR_Account_URL.png)
+* `DOCKERHUB_USERNAME`: your dockerhub username
+* `DOCKERHUB_PASSWORD`: your dockerhub password
+* `EC2_KEY_PAIR`: the EC2 keypair
   
 ### Main Files
 
