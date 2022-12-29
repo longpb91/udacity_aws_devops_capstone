@@ -101,12 +101,12 @@ jobs:
             name: Create cluster
             command: |
               chmod +x run_create_cluster.sh && \
-              ./run_create_cluster.sh
+              ./create_cluster.sh
         - run:
             name: Deploy Kubenetes to eks
             command: |
-              chmod +x deploy.sh && \
-              ./deploy.sh
+              chmod +x deploy_k8s.sh && \
+              ./deploy_k8s.sh
               # Wait for deploy success 
               kubectl wait  --for=condition=ready pod -l app=myflaskapp
               sleep 30s
@@ -124,7 +124,6 @@ jobs:
                 echo "App didn't work after deploy. Rollback previous deploy.Check result at ${url}"
               fi
         
-
 
 workflows:
   default:
