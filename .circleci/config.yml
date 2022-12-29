@@ -141,7 +141,7 @@ workflows:
           create-repo: true
           dockerfile: Dockerfile
           path: .
-          region: AWS_DEFAULT_REGION
+          region: us-east-1
           repo: longpb1
           tag: "$CIRCLE_SHA1"
           requires:
