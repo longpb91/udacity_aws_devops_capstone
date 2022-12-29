@@ -73,7 +73,7 @@ jobs:
           create-repo: true
           dockerfile: Dockerfile
           path: .
-          region: AWS_DEFAULT_REGION
+          region: $AWS_DEFAULT_REGION
           repo: longpb1
           tag: latest,"$CIRCLE_SHA1"
 
