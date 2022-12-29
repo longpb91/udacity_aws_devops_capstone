@@ -135,20 +135,18 @@ workflows:
   default:
     jobs:
       - test_lint
-      - build_and_push_image:
-          jobs:
-            - aws-ecr/build-and-push-image:
-                account-url: ${AWS_ECR_ACCOUNT_URL}
-                aws-access-key-id: ${AWS_ACCESS_KEY_ID}
-                aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
-                create-repo: true
-                dockerfile: Dockerfile
-                path: .
-                region: ${AWS_DEFAULT_REGION}
-                repo: longpb1
-                tag: "$CIRCLE_SHA1"
-                requires:
-                  - test_lint
+      - aws-ecr/build-and-push-image:
+          account-url: ${AWS_ECR_ACCOUNT_URL}
+          aws-access-key-id: ${AWS_ACCESS_KEY_ID}
+          aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+          create-repo: true
+          dockerfile: Dockerfile
+          path: .
+          region: ${AWS_DEFAULT_REGION}
+          repo: longpb1
+          tag: "$CIRCLE_SHA1"
+          requires:
+            - test_lint
       # - deploy-eks:
       #     requires:
       #       - build-image
