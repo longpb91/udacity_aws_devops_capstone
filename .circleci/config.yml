@@ -148,5 +148,5 @@ workflows:
             - test_lint
       - deploy-eks:
           requires:
-            - build-image
+            - aws-ecr/build-and-push-image
 
