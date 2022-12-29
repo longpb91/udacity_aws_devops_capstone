@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: myflaskapp
-          image: longpb/capstone_aws_devops_pj
+          image: longpb/capstone_aws_devops_pj:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
