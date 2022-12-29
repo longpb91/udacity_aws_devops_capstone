@@ -61,18 +61,18 @@ jobs:
   #           docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
   #           docker push longpb/capstone_aws_devops_pj
 
-  build_and_push_image:
-    steps:
-      - aws-ecr/build-and-push-image:
-          account-url: ${AWS_ECR_ACCOUNT_URL}
-          aws-access-key-id: ${AWS_ACCESS_KEY_ID}
-          aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
-          create-repo: true
-          dockerfile: Dockerfile
-          path: .
-          region: ${AWS_DEFAULT_REGION}
-          repo: longpb1
-          tag: "$CIRCLE_SHA1"
+  # build_and_push_image:
+  #   steps:
+  #     - aws-ecr/build-and-push-image:
+  #         account-url: ${AWS_ECR_ACCOUNT_URL}
+  #         aws-access-key-id: ${AWS_ACCESS_KEY_ID}
+  #         aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+  #         create-repo: true
+  #         dockerfile: Dockerfile
+  #         path: .
+  #         region: ${AWS_DEFAULT_REGION}
+  #         repo: longpb1
+  #         tag: "$CIRCLE_SHA1"
 
   # build-image-ecr:
   #   docker:
@@ -136,8 +136,19 @@ workflows:
     jobs:
       - test_lint
       - build_and_push_image:
-          requires:
-            - test_lint
+          jobs:
+            - aws-ecr/build-and-push-image:
+                account-url: ${AWS_ECR_ACCOUNT_URL}
+                aws-access-key-id: ${AWS_ACCESS_KEY_ID}
+                aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+                create-repo: true
+                dockerfile: Dockerfile
+                path: .
+                region: ${AWS_DEFAULT_REGION}
+                repo: longpb1
+                tag: "$CIRCLE_SHA1"
+                requires:
+                  - test_lint
       # - deploy-eks:
       #     requires:
       #       - build-image
