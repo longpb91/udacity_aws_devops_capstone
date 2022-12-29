@@ -100,7 +100,7 @@ jobs:
         - run:
             name: Create cluster
             command: |
-              chmod +x run_create_cluster.sh && \
+              chmod +x create_cluster.sh && \
               ./create_cluster.sh
         - run:
             name: Deploy Kubenetes to eks
