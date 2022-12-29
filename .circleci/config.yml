@@ -115,7 +115,7 @@ jobs:
             command: |
               export hostname=$(kubectl get services flask-service  -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
               export url="http://${hostname}:8000"
-              if curl -X GET ${url} | grep -q "Hello World"
+              if curl -X GET ${url} | grep -q "I am LongPB"
               then
                 echo "App work at ${url}"
               else
