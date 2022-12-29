@@ -113,7 +113,7 @@ jobs:
               else
                 kubectl rollout undo deployment/myflaskapp-deployment
                 kubectl rollout status deployment myflaskapp-deployment --timeout=90s
-                echo "App didn't work after deploy. Rollback previous deploy.Check result at ${url}"
+                echo "App did not work after deploy. Rollback previous deploy. Check the result at ${url}"
               fi
         
 workflows:
