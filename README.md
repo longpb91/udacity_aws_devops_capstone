@@ -2,6 +2,7 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/longpb91/udacity_aws_devops_capstone/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/longpb91/udacity_aws_devops_capstone/tree/master)
 
+
 ## Project Overview
 
 The project will be applied skills and knowledge which were developed throughout the Cloud DevOps Nanodegree program. These include:
